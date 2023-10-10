@@ -390,6 +390,7 @@ void sha256_final(sha256_ctx *ctx, unsigned char *digest)
     unsigned int block_nb;
     unsigned int pm_len;
     unsigned int len_b;
+    unsigned int tot_len;
 
 #ifndef UNROLL_LOOPS
     int i;
@@ -398,7 +399,10 @@ void sha256_final(sha256_ctx *ctx, unsigned char *digest)
     block_nb = (1 + ((SHA256_BLOCK_SIZE - 9)
                      < (ctx->len % SHA256_BLOCK_SIZE)));
 
-    len_b = (ctx->tot_len + ctx->len) << 3;
+    tot_len = ctx->tot_len + ctx->len;
+    ctx->tot_len = tot_len;
+
+    len_b = tot_len << 3;
     pm_len = block_nb << 6;
 
     memset(ctx->block + ctx->len, 0, pm_len - ctx->len);
@@ -587,6 +591,7 @@ void sha512_final(sha512_ctx *ctx, unsigned char *digest)
     unsigned int block_nb;
     unsigned int pm_len;
     unsigned int len_b;
+    unsigned int tot_len;
 
 #ifndef UNROLL_LOOPS
     int i;
@@ -595,7 +600,10 @@ void sha512_final(sha512_ctx *ctx, unsigned char *digest)
     block_nb = 1 + ((SHA512_BLOCK_SIZE - 17)
                      < (ctx->len % SHA512_BLOCK_SIZE));
 
-    len_b = (ctx->tot_len + ctx->len) << 3;
+    tot_len = ctx->tot_len + ctx->len;
+    ctx->tot_len = tot_len;
+
+    len_b = tot_len << 3;
     pm_len = block_nb << 7;
 
     memset(ctx->block + ctx->len, 0, pm_len - ctx->len);
@@ -689,6 +697,7 @@ void sha384_final(sha384_ctx *ctx, unsigned char *digest)
     unsigned int block_nb;
     unsigned int pm_len;
     unsigned int len_b;
+    unsigned int tot_len;
 
 #ifndef UNROLL_LOOPS
     int i;
@@ -697,7 +706,10 @@ void sha384_final(sha384_ctx *ctx, unsigned char *digest)
     block_nb = (1 + ((SHA384_BLOCK_SIZE - 17)
                      < (ctx->len % SHA384_BLOCK_SIZE)));
 
-    len_b = (ctx->tot_len + ctx->len) << 3;
+    tot_len = ctx->tot_len + ctx->len;
+    ctx->tot_len = tot_len;
+
+    len_b = tot_len << 3;
     pm_len = block_nb << 7;
 
     memset(ctx->block + ctx->len, 0, pm_len - ctx->len);
@@ -789,6 +801,7 @@ void sha224_final(sha224_ctx *ctx, unsigned char *digest)
     unsigned int block_nb;
     unsigned int pm_len;
     unsigned int len_b;
+    unsigned int tot_len;
 
 #ifndef UNROLL_LOOPS
     int i;
@@ -797,7 +810,10 @@ void sha224_final(sha224_ctx *ctx, unsigned char *digest)
     block_nb = (1 + ((SHA224_BLOCK_SIZE - 9)
                      < (ctx->len % SHA224_BLOCK_SIZE)));
 
-    len_b = (ctx->tot_len + ctx->len) << 3;
+    tot_len = ctx->tot_len + ctx->len;
+    ctx->tot_len = tot_len;
+
+    len_b = tot_len << 3;
     pm_len = block_nb << 6;
 
     memset(ctx->block + ctx->len, 0, pm_len - ctx->len);
