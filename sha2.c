@@ -38,8 +38,8 @@
 #include "sha2.h"
 
 #define SHFR(x, n)    (x >> n)
-#define ROTR(x, n)   ((x >> n) | (x << ((sizeof(x) << 3) - n)))
-#define ROTL(x, n)   ((x << n) | (x >> ((sizeof(x) << 3) - n)))
+#define ROTR(x, n)   ((x >> n) | (x << ((sizeof (x) << 3) - n)))
+#define ROTL(x, n)   ((x << n) | (x >> ((sizeof (x) << 3) - n)))
 #define CH(x, y, z)  ((x & y) ^ (~x & z))
 #define MAJ(x, y, z) ((x & y) ^ (x & z) ^ (y & z))
 
@@ -207,7 +207,8 @@ static const uint64 sha512_k[80] =
 
 /* SHA-2 internal function */
 
-void sha256_transf(sha256_ctx *ctx, const uint8 *message, uint32 block_nb)
+static void sha256_transf(sha256_ctx *ctx, const uint8 *message,
+    uint32 block_nb)
 {
     uint32 w[64];
     uint32 wv[8];
@@ -321,7 +322,8 @@ void sha256_transf(sha256_ctx *ctx, const uint8 *message, uint32 block_nb)
     }
 }
 
-void sha512_transf(sha512_ctx *ctx, const uint8 *message, uint32 block_nb)
+static void sha512_transf(sha512_ctx *ctx, const uint8 *message,
+    uint32 block_nb)
 {
     uint64 w[80];
     uint64 wv[8];
@@ -470,8 +472,7 @@ void sha224_update(sha224_ctx *ctx, const uint8 *message, uint32 len)
 
     rem_len = new_len % SHA224_BLOCK_SIZE;
 
-    memcpy(ctx->block, &shifted_message[block_nb << 6],
-           rem_len);
+    memcpy(ctx->block, &shifted_message[block_nb << 6], rem_len);
 
     ctx->len = rem_len;
     ctx->tot_len += (block_nb + 1) << 6;
@@ -574,8 +575,7 @@ void sha256_update(sha256_ctx *ctx, const uint8 *message, uint32 len)
 
     rem_len = new_len % SHA256_BLOCK_SIZE;
 
-    memcpy(ctx->block, &shifted_message[block_nb << 6],
-           rem_len);
+    memcpy(ctx->block, &shifted_message[block_nb << 6], rem_len);
 
     ctx->len = rem_len;
     ctx->tot_len += (block_nb + 1) << 6;
@@ -679,8 +679,7 @@ void sha384_update(sha384_ctx *ctx, const uint8 *message, uint32 len)
 
     rem_len = new_len % SHA384_BLOCK_SIZE;
 
-    memcpy(ctx->block, &shifted_message[block_nb << 7],
-           rem_len);
+    memcpy(ctx->block, &shifted_message[block_nb << 7], rem_len);
 
     ctx->len = rem_len;
     ctx->tot_len += (block_nb + 1) << 7;
@@ -782,8 +781,7 @@ void sha512_update(sha512_ctx *ctx, const uint8 *message, uint32 len)
 
     rem_len = new_len % SHA512_BLOCK_SIZE;
 
-    memcpy(ctx->block, &shifted_message[block_nb << 7],
-           rem_len);
+    memcpy(ctx->block, &shifted_message[block_nb << 7], rem_len);
 
     ctx->len = rem_len;
     ctx->tot_len += (block_nb + 1) << 7;
@@ -856,6 +854,7 @@ void test(const char *vector, uint8 *digest, uint32 digest_size)
         exit(EXIT_FAILURE);
     }
 }
+
 #ifdef TEST_VECTORS_LONG
 
 /* Validation tests with a message of 1e9 bytes */
