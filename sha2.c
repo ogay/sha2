@@ -502,7 +502,6 @@ void sha224_final(sha224_ctx *ctx, uint8 *digest)
     memset(ctx->block + ctx->len, 0, pm_len - ctx->len);
     ctx->block[ctx->len] = 0x80;
     UNPACK64(len_b, ctx->block + pm_len - 8);
-    *(ctx->block + pm_len - 9) = (uint8) ((tot_len >> 61) & 0x07);
 
     sha256_transf(ctx, ctx->block, block_nb);
 
@@ -605,7 +604,6 @@ void sha256_final(sha256_ctx *ctx, uint8 *digest)
     memset(ctx->block + ctx->len, 0, pm_len - ctx->len);
     ctx->block[ctx->len] = 0x80;
     UNPACK64(len_b, ctx->block + pm_len - 8);
-    *(ctx->block + pm_len - 9) = (uint8) ((tot_len >> 61) & 0x07);
 
     sha256_transf(ctx, ctx->block, block_nb);
 
@@ -709,7 +707,6 @@ void sha384_final(sha384_ctx *ctx, uint8 *digest)
     memset(ctx->block + ctx->len, 0, pm_len - ctx->len);
     ctx->block[ctx->len] = 0x80;
     UNPACK64(len_b, ctx->block + pm_len - 8);
-    *(ctx->block + pm_len - 9) = (uint8) ((tot_len >> 61) & 0x07);
 
     sha512_transf(ctx, ctx->block, block_nb);
 
@@ -811,7 +808,6 @@ void sha512_final(sha512_ctx *ctx, uint8 *digest)
     memset(ctx->block + ctx->len, 0, pm_len - ctx->len);
     ctx->block[ctx->len] = 0x80;
     UNPACK64(len_b, ctx->block + pm_len - 8);
-    *(ctx->block + pm_len - 9) = (uint8) ((tot_len >> 61) & 0x07);
 
     sha512_transf(ctx, ctx->block, block_nb);
 
@@ -854,6 +850,82 @@ void test(const char *vector, uint8 *digest, uint32 digest_size)
         fprintf(stderr, "Test failed.\n");
         exit(EXIT_FAILURE);
     }
+}
+
+static void test_sha224_message4(uint8 *digest)
+{
+    /* Message of 929271 bytes */
+
+    sha224_ctx ctx;
+    uint8 message[1000];
+    int i;
+
+    memset(message, 'a', sizeof (message));
+
+    sha224_init(&ctx);
+    for (i = 0; i < 929; i++) {
+        sha224_update(&ctx, message, sizeof (message));
+    }
+    sha224_update(&ctx, message, 271);
+
+    sha224_final(&ctx, digest);
+}
+
+static void test_sha256_message4(uint8 *digest)
+{
+    /* Message of 929271 bytes */
+
+    sha256_ctx ctx;
+    uint8 message[1000];
+    int i;
+
+    memset(message, 'a', sizeof (message));
+
+    sha256_init(&ctx);
+    for (i = 0; i < 929; i++) {
+        sha256_update(&ctx, message, sizeof (message));
+    }
+    sha256_update(&ctx, message, 271);
+
+    sha256_final(&ctx, digest);
+}
+
+static void test_sha384_message4(uint8 *digest)
+{
+    /* Message of 929271 bytes */
+
+    sha384_ctx ctx;
+    uint8 message[1000];
+    int i;
+
+    memset(message, 'a', sizeof (message));
+
+    sha384_init(&ctx);
+    for (i = 0; i < 929; i++) {
+        sha384_update(&ctx, message, sizeof (message));
+    }
+    sha384_update(&ctx, message, 271);
+
+    sha384_final(&ctx, digest);
+}
+
+static void test_sha512_message4(uint8 *digest)
+{
+    /* Message of 929271 bytes */
+
+    sha512_ctx ctx;
+    uint8 message[1000];
+    int i;
+
+    memset(message, 'a', sizeof (message));
+
+    sha512_init(&ctx);
+    for (i = 0; i < 929; i++) {
+        sha512_update(&ctx, message, sizeof (message));
+    }
+    sha512_update(&ctx, message, 271);
+
+    sha512_final(&ctx, digest);
 }
 
 #ifdef TEST_VECTORS_LONG
@@ -924,12 +996,13 @@ static void test_sha512_long_message(uint8 *digest)
 
 int main(void)
 {
-    static const char *vectors[4][4] =
+    static const char *vectors[4][5] =
     {   /* SHA-224 */
         {
         "23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7",
         "75388b16512776cc5dba5da1fd890150b0c6455cb4f58b1952522525",
         "20794655980c91d8bbb4c1ea97618a4bf03f42581948b2ee4ee7ad67",
+        "c84cf4761583afa849ffd562c52a2e2a5104f1a4071dab6c53560d4f",
         "b7bdc6c1f4f789f1456e68a005779a6c1f6199211008bee2801baf0d",
         },
         /* SHA-256 */
@@ -937,6 +1010,7 @@ int main(void)
         "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
         "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1",
         "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0",
+        "8c14f43ad81026351e9b60025b5420e6072ff617f5c72145b179599211514947",
         "53748286337dbe36f5df22e7ef1af3ad71530398cf569adc7eb5fefa7af7003c",
         },
         /* SHA-384 */
@@ -947,6 +1021,8 @@ int main(void)
         "fcc7c71a557e2db966c3e9fa91746039",
         "9d0e1809716474cb086e834e310a4a1ced149e9c00f248527972cec5704c2a5b"
         "07b8b3dc38ecc4ebae97ddd87f3d8985",
+        "3de4a44dba8627278c376148b6d45be0a3a410337330ef3e1d9ca34c4593ecfc"
+        "8ce7a8415aefaca6b39d1112078cc3e0",
         "073de8e641532032b2922c4af165baa88dfe5fdafb09575657406894b4b94996"
         "8975eef50c1ef5be59ca0ecdaa996496",
         },
@@ -958,6 +1034,8 @@ int main(void)
         "501d289e4900f7e4331b99dec4b5433ac7d329eeb6dd26545e96e55b874be909",
         "e718483d0ce769644e2e42c7bc15b4638e1f98b13b2044285632a803afa973eb"
         "de0ff244877ea60a4cb0432ce577c31beb009c5c2c49aa2e4eadb217ad8cc09b",
+        "a7e464bfd1f27201d7d0575c1a302cecef0004828e923e4255c8de6bae958a01"
+        "9294e3f851bf9a03013963cd1268687c549916438e465433957d4480bcaa8572",
         "922637075a3ee5d87a7ce3ae7e04083d6daea7b541f264512290157ce3f81f9b"
         "afcd3f9dc2d4fe0a6248a071709b96d0128d96c48220b2ab919b99187cb16fbf"
         }
@@ -989,9 +1067,11 @@ int main(void)
     test(vectors[0][1], digest, SHA224_DIGEST_SIZE);
     sha224(message3, message3_len, digest);
     test(vectors[0][2], digest, SHA224_DIGEST_SIZE);
+    test_sha224_message4(digest);
+    test(vectors[0][3], digest, SHA224_DIGEST_SIZE);
 #ifdef TEST_VECTORS_LONG
     test_sha224_long_message(digest);
-    test(vectors[0][3], digest, SHA224_DIGEST_SIZE);
+    test(vectors[0][4], digest, SHA224_DIGEST_SIZE);
 #endif
     printf("\n");
 
@@ -1003,9 +1083,11 @@ int main(void)
     test(vectors[1][1], digest, SHA256_DIGEST_SIZE);
     sha256(message3, message3_len, digest);
     test(vectors[1][2], digest, SHA256_DIGEST_SIZE);
+    test_sha256_message4(digest);
+    test(vectors[1][3], digest, SHA256_DIGEST_SIZE);
 #ifdef TEST_VECTORS_LONG
     test_sha256_long_message(digest);
-    test(vectors[1][3], digest, SHA256_DIGEST_SIZE);
+    test(vectors[1][4], digest, SHA256_DIGEST_SIZE);
 #endif
     printf("\n");
 
@@ -1017,9 +1099,11 @@ int main(void)
     test(vectors[2][1], digest, SHA384_DIGEST_SIZE);
     sha384(message3, message3_len, digest);
     test(vectors[2][2], digest, SHA384_DIGEST_SIZE);
+    test_sha384_message4(digest);
+    test(vectors[2][3], digest, SHA384_DIGEST_SIZE);
 #ifdef TEST_VECTORS_LONG
     test_sha384_long_message(digest);
-    test(vectors[2][3], digest, SHA384_DIGEST_SIZE);
+    test(vectors[2][4], digest, SHA384_DIGEST_SIZE);
 #endif
     printf("\n");
 
@@ -1031,9 +1115,11 @@ int main(void)
     test(vectors[3][1], digest, SHA512_DIGEST_SIZE);
     sha512(message3, message3_len, digest);
     test(vectors[3][2], digest, SHA512_DIGEST_SIZE);
+    test_sha512_message4(digest);
+    test(vectors[3][3], digest, SHA512_DIGEST_SIZE);
 #ifdef TEST_VECTORS_LONG
     test_sha512_long_message(digest);
-    test(vectors[3][3], digest, SHA512_DIGEST_SIZE);
+    test(vectors[3][4], digest, SHA512_DIGEST_SIZE);
 #endif
     printf("\n");
 
